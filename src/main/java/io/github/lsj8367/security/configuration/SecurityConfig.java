@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -21,6 +22,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final MemberRepository memberRepository;
+
+    @Override
+    protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
+        // authenticationProvider를 재정의 한 클래스를 provider로 지정해준다.
+        auth.authenticationProvider(authenticationProvider());
+    }
 
     @Override
     public void configure(WebSecurity web) throws Exception {
@@ -51,7 +58,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
-        return new CustomAuthenticationProvider(passwordEncoder(), userDetailsService());
+        return new CustomAuthenticationProvider(passwordEncoder(), customUserDetailService());
     }
 
 }
